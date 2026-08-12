@@ -75,4 +75,14 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    // VULNERABILITY: SQL Injection - intentionally vulnerable for SAST lab
+    // GET /api/users/search?username=admin
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<UserDto>>> SearchUsers(
+        [FromQuery] string username)
+    {
+        var users = await _userService.SearchUsersAsync(username);
+        return Ok(users);
+    }
 }

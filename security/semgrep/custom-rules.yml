@@ -1,0 +1,24 @@
+rules:
+  # Rule 1: Catches inline interpolated string directly inside FromSqlRaw()
+  # e.g. _context.Users.FromSqlRaw($"SELECT * FROM Users WHERE Username = '{username}'")
+  - id: csharp-sql-injection-fromsqlraw-inline-interpolation
+    languages:
+      - csharp
+    message: "Potential SQL Injection: FromSqlRaw is being used with an inline interpolated SQL string. Use parameterized queries instead."
+    severity: ERROR
+    patterns:
+      - pattern: $CONTEXT.FromSqlRaw($"...")
+
+  # Rule 2: Catches variable assigned from interpolated string, then passed to FromSqlRaw()
+  # e.g. var sql = $"SELECT * FROM Users WHERE Username = '{username}'";
+  #      _context.Users.FromSqlRaw(sql)
+  - id: csharp-sql-injection-fromsqlraw-variable-interpolation
+    languages:
+      - csharp
+    message: "Potential SQL Injection: A variable built from an interpolated string is being passed to FromSqlRaw. Use parameterized queries instead."
+    severity: ERROR
+    patterns:
+      - pattern: |
+          var $SQL = $"...";
+          ...
+          $CONTEXT.FromSqlRaw($SQL)

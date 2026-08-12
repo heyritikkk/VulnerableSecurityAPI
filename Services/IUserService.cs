@@ -12,4 +12,7 @@ public interface IUserService
     Task<UserDto> CreateUserAsync(CreateUserDto createUserDto);
     Task<bool> UpdateUserAsync(int id, CreateUserDto updateUserDto);
     Task<bool> DeleteUserAsync(int id);
+
+    // VULNERABILITY: SQL Injection - intentionally vulnerable for SAST lab
+    Task<IEnumerable<UserDto>> SearchUsersAsync(string username);
 }

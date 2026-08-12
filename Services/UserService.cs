@@ -88,4 +88,21 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    // REMEDIATED: SQL Injection fixed — parameterized query
+    // {0} is a positional parameter handled safely by EF Core
+    // User input never touches the SQL string structure
+    public async Task<IEnumerable<UserDto>> SearchUsersAsync(string username)
+    {
+        return await _context.Users
+            .FromSqlRaw("SELECT * FROM Users WHERE Username = {0}", username)
+            .Select(u => new UserDto
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email,
+                Role = u.Role
+            })
+            .ToListAsync();
+    }
 }
